@@ -410,8 +410,18 @@ async function cargarNotas(idSubtema) {
                     a.appendChild(opcionIcon);
                     a.appendChild(document.createTextNode(opcion.text));
 
+                    if (opcion.text === 'Eliminar') {
+                        a.classList.add('eliminar-nota-btn');
+                    }
+
                     li.appendChild(a);
                     dropdownMenu.appendChild(li);
+                });
+
+                // Agregar evento de eliminación
+                dropdownMenu.querySelector('.eliminar-nota-btn').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    mostrarModalEliminarNota(nota.id);
                 });
 
                 dropdown.appendChild(dropdownButton);
@@ -433,5 +443,89 @@ async function cargarNotas(idSubtema) {
 // Exportar para uso en otros archivos
 window.apiClient = apiClient;
 window.cargarTemas = cargarTemas;
+// Función para mostrar modal de confirmación de eliminación de nota
+function mostrarModalEliminarNota(idNota) {
+    const modalHTML = `
+        <div class="modal fade" id="confirmarEliminarNotaModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Está seguro que desea eliminar esta nota?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmar-eliminar-nota-btn">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarNotaModal'));
+    modal.show();
+
+    document.getElementById('confirmar-eliminar-nota-btn').addEventListener('click', function () {
+        fetch('http://186.64.122.174:8037/api/Nota/Eliminar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: idNota,
+                idRemoto: 0,
+                titulo: "",
+                detalle: "",
+                ayuda: "",
+                fecha: "",
+                libre: 0,
+                idTema: 0,
+                idSubtema: 0,
+                idUsuario: 0,
+                repaso: 0,
+                favorito: 0,
+                importancia: 0,
+                Token: "",
+                AppName: "",
+                AppVersion: "",
+                AppData: ""
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                modal.hide();
+                document.getElementById('confirmarEliminarNotaModal').remove();
+                // Actualizar lista de notas del subtema actual
+                const subtemaSeleccionado = document.querySelector('#subtemas-list .list-item.active');
+                if (subtemaSeleccionado) {
+                    cargarNotas(subtemaSeleccionado.dataset.id);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar la nota');
+            });
+    });
+
+    // Configurar botón Cancelar
+    document.querySelector('#confirmarEliminarNotaModal .btn-secondary').addEventListener('click', function () {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarNotaModal'));
+        modal.hide();
+        document.getElementById('confirmarEliminarNotaModal').remove();
+    });
+
+    // Eliminar modal al cerrar
+    document.getElementById('confirmarEliminarNotaModal').addEventListener('hidden.bs.modal', function () {
+        this.remove();
+    });
+}
+
+// Exportar para uso en otros archivos
+window.apiClient = apiClient;
+window.cargarTemas = cargarTemas;
 window.cargarSubtemas = cargarSubtemas;
 window.cargarNotas = cargarNotas;
+window.mostrarModalEliminarNota = mostrarModalEliminarNota;
