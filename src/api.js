@@ -120,27 +120,7 @@ async function cargarTemas() {
     temas.forEach(tema => {
         const temaElement = document.createElement('div');
         temaElement.className = 'list-item d-flex justify-content-between align-items-center';
-
-        // Crear contenedor para nombre e icono
-        const nombreContainer = document.createElement('div');
-        nombreContainer.className = 'd-flex align-items-center';
-
-        // Agregar icono de edición
-        const icono = document.createElement('i');
-        icono.className = 'bi bi-pencil me-2';
-        nombreContainer.appendChild(icono);
-
-        // Agregar nombre del tema
-        const nombreTema = document.createElement('span');
-        nombreTema.textContent = tema.nombre;
-        nombreContainer.appendChild(nombreTema);
-
-        temaElement.appendChild(nombreContainer);
-
-        // Agregar chevron derecho
-        const chevron = document.createElement('i');
-        chevron.className = 'bi bi-chevron-right me-2';
-        temaElement.appendChild(chevron);
+        temaElement.textContent = tema.nombre;
 
         // Agregar menú de tres puntos
         const dropdown = document.createElement('div');
