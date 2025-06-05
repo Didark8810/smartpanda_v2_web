@@ -346,28 +346,76 @@
 
         // Configurar botón Excel
         document.getElementById('exportar-excel-btn').addEventListener('click', function() {
-            //alert('Funcionalidad de exportar a Excel aún no implementada');
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = '.xlsx,.xls';
-            fileInput.style.display = 'none';
+            const modalHTML = `
+                <div class="modal fade" id="excelModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Importar desde Excel</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h6>Importar desde archivo Excel</h6>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="fileTab">
+                                        <div class="mb-3">
+                                            <label class="form-label">Seleccionar archivo Excel</label>
+                                            <input type="file" class="form-control" id="excel-file" accept=".xlsx,.xls">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="subir-excel-btn">Subir información</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
             
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    alert(`Procesando archivo: ${file.name}`);
-                    processExcelFile(file)
-                        .then(() => console.log('File processed successfully'))
-                        .catch(err => {
-                            console.error('Error processing file:', err);
-                            alert('Error al procesar el archivo Excel');
-                        });
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            const modal = new bootstrap.Modal(document.getElementById('excelModal'));
+            modal.show();
+
+            document.getElementById('subir-excel-btn').addEventListener('click', function() {
+                // Mostrar modal de progreso
+                const progressHTML = `
+                    <div id="excel-progress" class="modal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.5)">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                                    <p id="progress-text">Preparando importación...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                document.body.insertAdjacentHTML('beforeend', progressHTML);
+
+                const fileInput = document.getElementById('excel-file');
+                if (!fileInput.files.length) {
+                    alert('Por favor seleccione un archivo');
+                    return;
                 }
+                processExcelFile(fileInput.files[0])
+                    .then(() => {
+                        const progressModal = document.getElementById('excel-progress');
+                        if (progressModal) progressModal.remove();
+                        modal.hide();
+                        document.getElementById('excelModal').remove();
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        const progressModal = document.getElementById('excel-progress');
+                        if (progressModal) progressModal.remove();
+                        alert('Error al procesar el archivo Excel');
+                    });
             });
-            
-            document.body.appendChild(fileInput);
-            fileInput.click();
-            document.body.removeChild(fileInput);
+
+            // Limpiar al cerrar
+            document.getElementById('excelModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
         });
 
             // Crear modal para nueva nota

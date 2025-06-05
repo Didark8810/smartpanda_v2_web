@@ -7,36 +7,26 @@
  * @param {File} file - The Excel file to process
  * @returns {Promise} Resolves when processing is complete
  */
-function processExcelFile(file) {
+function processExcelFile(source) {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        
-                reader.onload = function(e) {
-                    // Show loading spinner
-                    const spinnerHTML = `
-                        <div id="excel-spinner" class="modal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.5)">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-body text-center">
-                                        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                                            <span class="visually-hidden">Cargando...</span>
-                                        </div>
-                                        <p class="mt-3">Procesando archivo: ${file.name}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    document.body.insertAdjacentHTML('beforeend', spinnerHTML);
-                    
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, {type: 'array'});
+        // Update progress UI
+        function updateProgress(current, total) {
+            const progressText = document.getElementById('progress-text');
+            if (progressText) {
+                progressText.textContent = `Procesando ${current} de ${total} registros...`;
+            }
+        }
+
+        // Process data from either URL or File
+        const processData = (data) => {
+            try {
+                const workbook = XLSX.read(new Uint8Array(data), {type: 'array'});
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: ['titulo', 'detalle', 'ayuda']});
-
-                // Filter out empty rows and process each row
+                
+                // Prepare notes data
                 const notesToCreate = jsonData
-                    .filter(row => row.titulo && row.detalle) // At least title and detail required
+                    .filter(row => row.titulo && row.detalle)
                     .map(row => ({
                         titulo: row.titulo || '',
                         detalle: row.detalle || '',
@@ -44,7 +34,7 @@ function processExcelFile(file) {
                         fecha: "",
                         libre: 0,
                         idTema: idTemaSeleccionado || 0,
-                        idSubtema: idSubtemaSeleccionado || 0, 
+                        idSubtema: idSubtemaSeleccionado || 0,
                         idUsuario: 1,
                         repaso: 0,
                         favorito: 0,
@@ -55,73 +45,45 @@ function processExcelFile(file) {
                         AppData: ""
                     }));
 
-                // Create notes sequentially
-                const createNotesSequentially = async () => {
-                    for (const note of notesToCreate) {
+                // Process records sequentially with progress updates
+                const processRecords = async () => {
+                    updateProgress(0, notesToCreate.length);
+                    
+                    for (let i = 0; i < notesToCreate.length; i++) {
                         await fetch('http://186.64.122.174:8037/api/Nota/Crear', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify(note)
-                        })
-                        .then(response => response.json())
-                        .catch(error => {
-                            console.error('Error creating note:', error);
-                            throw error;
+                            body: JSON.stringify(notesToCreate[i])
                         });
+                        updateProgress(i + 1, notesToCreate.length);
                     }
                 };
 
-                        createNotesSequentially()
-                            .then(() => {
-                                // Remove spinner
-                                const spinner = document.getElementById('excel-spinner');
-                                if (spinner) spinner.remove();
-                                
-                                // Show success message
-                                const successHTML = `
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        ${notesToCreate.length} notas creadas exitosamente
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>`;
-                                document.body.insertAdjacentHTML('afterbegin', successHTML);
-                                
-                                if (idSubtemaSeleccionado) {
-                                    cargarNotas(idSubtemaSeleccionado); // Refresh notes list
-                                }
-                                resolve();
-                            })
-                    .catch(error => {
-                        console.error('Error processing Excel file:', error);
-                        // Remove spinner
-                        const spinner = document.getElementById('excel-spinner');
-                        if (spinner) spinner.remove();
-                        
-                        // Show error message
-                        const errorHTML = `
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                Error al procesar el archivo Excel
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>`;
-                        document.body.insertAdjacentHTML('afterbegin', errorHTML);
-                        reject(error);
+                return processRecords()
+                    .then(() => {
+                        if (idSubtemaSeleccionado) {
+                            cargarNotas(idSubtemaSeleccionado);
+                        }
+                        resolve();
                     });
-
             } catch (error) {
-                console.error('Error reading Excel file:', error);
-                alert('Error al leer el archivo Excel');
+                console.error('Error procesando Excel:', error);
                 reject(error);
             }
         };
 
+        // Read local file
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            processData(e.target.result);
+        };
         reader.onerror = function(error) {
-            console.error('FileReader error:', error);
-            alert('Error al leer el archivo');
+            console.error('Error leyendo archivo:', error);
             reject(error);
         };
-
-        reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(source);
     });
 }
 
