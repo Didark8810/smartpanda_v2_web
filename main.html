@@ -101,7 +101,19 @@
                     </button>
                 </div>
                 <div id="temas-list" class="list-group">
-
+                    <!-- Se llenará dinámicamente con elementos como:
+                    <div class="list-item d-flex justify-content-between align-items-center" data-id="1">
+                        <span>Tema 1</span>
+                        <div class="dropdown">
+                            <button class="btn btn-link text-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item eliminar-tema-btn" href="#">Eliminar</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    -->
                 </div>
             </div>
 
@@ -420,8 +432,89 @@
             });
         });
 
+        // Modal de confirmación para eliminar tema
+        function mostrarModalEliminarTema(idTema) {
+            const modalHTML = `
+                <div class="modal fade" id="confirmarEliminarTemaModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmar eliminación</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Está seguro que desea eliminar este tema?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-danger" id="confirmar-eliminar-tema-btn">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarTemaModal'));
+            modal.show();
+
+            document.getElementById('confirmar-eliminar-tema-btn').addEventListener('click', function () {
+                fetch('http://186.64.122.174:8037/api/Tema/Eliminar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: idTema,
+                        idRemoto: 0,
+                        nombre: "",
+                        color: "",
+                        idUsuario: 0,
+                        detalle: "",
+                        Token: "",
+                        AppName: "",
+                        AppVersion: "",
+                        AppData: ""
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        modal.hide();
+                        document.getElementById('confirmarEliminarTemaModal').remove();
+                        cargarTemas(); // Actualizar lista
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al eliminar el tema');
+                    });
+            });
+
+            // Configurar botón Cancelar para cerrar y eliminar el modal
+            document.querySelector('#confirmarEliminarTemaModal .btn-secondary').addEventListener('click', function () {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarTemaModal'));
+                modal.hide();
+                document.getElementById('confirmarEliminarTemaModal').remove();
+            });
+
+            // Eliminar modal al cerrar
+            document.getElementById('confirmarEliminarTemaModal').addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+        }
+
         // Cargar temas al iniciar
-        document.addEventListener('DOMContentLoaded', cargarTemas);
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarTemas();
+
+            // Delegación de eventos para el botón eliminar
+            document.getElementById('temas-list').addEventListener('click', function (e) {
+                if (e.target.classList.contains('eliminar-tema-btn')) {
+                    e.preventDefault();
+                    const temaItem = e.target.closest('.list-item');
+                    const idTema = temaItem.dataset.id;
+                    mostrarModalEliminarTema(idTema);
+                }
+            });
+        });
 
         // Manejar selección de temas
         document.getElementById('temas-list').addEventListener('click', function (e) {

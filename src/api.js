@@ -104,6 +104,43 @@ class ApiClient {
             return [];
         }
     }
+
+    async eliminarTema(idTema) {
+        try {
+            const response = await fetch(`${this.baseUrl}/api/Tema/Eliminar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: idTema,
+                    idRemoto: 0,
+                    nombre: "",
+                    color: "",
+                    idUsuario: 0,
+                    detalle: "",
+                    Token: "",
+                    AppName: "",
+                    AppVersion: "",
+                    AppData: ""
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al eliminar tema');
+            }
+
+            const data = await response.json();
+            if (data.respuesta !== 1) {
+                throw new Error(data.Mensaje || 'Error en la respuesta del servidor');
+            }
+
+            return data.Data;
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    }
 }
 
 // Configuración inicial
@@ -158,9 +195,19 @@ async function cargarTemas() {
             a.appendChild(opcionIcon);
             a.appendChild(document.createTextNode(opcion.text));
 
+            if (opcion.text === 'Eliminar') {
+                a.classList.add('eliminar-tema-btn');
+            }
+
             li.appendChild(a);
             dropdownMenu.appendChild(li);
         });
+
+        // Manejar evento de eliminación
+        // dropdownMenu.querySelector('.eliminar-tema-btn').addEventListener('click', async (e) => {
+        //     e.preventDefault();
+        //     mostrarModalEliminarTema(tema.id);
+        // });
 
         dropdown.appendChild(dropdownButton);
         dropdown.appendChild(dropdownMenu);
