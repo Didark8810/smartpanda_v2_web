@@ -148,17 +148,26 @@ async function cargarNotas(idSubtema) {
     const notasList = document.getElementById('notas-list');
     notasList.innerHTML = '<div class="text-center py-3">Cargando notas...</div>';
 
-    const notas = await apiClient.obtenerNotas(idSubtema);
-    window.notas = notas; // Guardar notas en variable global
-    notasList.innerHTML = '';
+    try {
+        const notas = await apiClient.obtenerNotas(idSubtema);
+        window.notas = notas || []; // Guardar notas en variable global
+        notasList.innerHTML = '';
 
-    notas.forEach(nota => {
-        const notaElement = document.createElement('div');
-        notaElement.className = 'list-item';
-        notaElement.textContent = nota.titulo;
-        notaElement.dataset.id = nota.id;
-        notasList.appendChild(notaElement);
-    });
+        if (notas && notas.length > 0) {
+            notas.forEach(nota => {
+                const notaElement = document.createElement('div');
+                notaElement.className = 'list-item';
+                notaElement.textContent = nota.titulo;
+                notaElement.dataset.id = nota.id;
+                notasList.appendChild(notaElement);
+            });
+        } else {
+            notasList.innerHTML = '<div class="text-center py-3 text-muted">No hay notas disponibles</div>';
+        }
+    } catch (error) {
+        console.error('Error al cargar notas:', error);
+        notasList.innerHTML = '<div class="text-center py-3 text-danger">Error al cargar notas</div>';
+    }
 }
 
 // Exportar para uso en otros archivos

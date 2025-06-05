@@ -15,6 +15,20 @@
             border-right: 1px solid #dee2e6;
         }
 
+        /* Columnas más estrechas para temas, subtemas y notas */
+        .col-md-3.column {
+            width: 20%;
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+
+        /* Columna más ancha para el detalle */
+        .col-md-6.column {
+            width: 40%;
+            flex: 0 0 40%;
+            max-width: 40%;
+        }
+
         .list-item {
             cursor: pointer;
             padding: 10px;
@@ -155,32 +169,62 @@
                 document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
                 e.target.classList.add('active');
 
-                // Mostrar detalle editable de la nota seleccionada
+                // Mostrar detalle de la nota seleccionada
                 const idNota = e.target.dataset.id;
                 const nota = window.notas.find(n => n.id == idNota);
 
-                document.getElementById('nota-detalle').innerHTML = `
-                    <div class="card">
-                        <div class="card-body">
-                            <form id="nota-form">
+                if (nota) {
+                    document.getElementById('nota-detalle').innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h3>${nota.titulo}</h3>
+                                <hr>
                                 <div class="mb-4">
-                                    <label class="form-label">Título</label>
-                                    <input type="text" class="form-control" name="titulo" value="${nota.titulo}">
+                                    <h5>Detalle:</h5>
+                                    <p style="white-space: pre-wrap;">${nota.detalle}</p>
                                 </div>
-                                <div class="mb-4">
-                                    <label class="form-label">Detalle</label>
-                                    <textarea class="form-control" name="detalle" rows="5" style="white-space: pre-wrap;">${nota.detalle}</textarea>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label">Ayuda</label>
-                                    <textarea class="form-control" name="ayuda" rows="3" style="white-space: pre-wrap;">${nota.ayuda || ''}</textarea>
-                                </div>
-                                <button type="button" class="btn btn-primary" id="editar-nota-btn">Editar</button>
-                                <button type="button" class="btn btn-secondary ms-2" id="cancelar-edicion-btn" style="display:none;">Cancelar</button>
-                                <button type="button" class="btn btn-success ms-2" id="guardar-nota-btn" style="display:none;">Guardar</button>
-                            </form>
-                        </div>
-                    </div>`;
+                                ${nota.ayuda ? `
+                                <div class="mt-4">
+                                    <h5>Ayuda:</h5>
+                                    <div class="alert alert-info" style="white-space: pre-wrap;">${nota.ayuda}</div>
+                                </div>` : ''}
+                                <button type="button" class="btn btn-primary mt-3" id="editar-nota-btn">Editar</button>
+                            </div>
+                        </div>`;
+                } else {
+                    document.getElementById('nota-detalle').innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Error</h5>
+                                <p class="card-text text-danger">No se pudo cargar la nota seleccionada</p>
+                            </div>
+                        </div>`;
+                }
+
+                // Configurar evento para el botón Editar
+                document.getElementById('editar-nota-btn').addEventListener('click', function () {
+                    document.getElementById('nota-detalle').innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <form id="nota-form">
+                                    <div class="mb-4">
+                                        <label class="form-label">Título</label>
+                                        <input type="text" class="form-control" name="titulo" value="${nota.titulo}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Detalle</label>
+                                        <textarea class="form-control" name="detalle" rows="5" style="white-space: pre-wrap;">${nota.detalle}</textarea>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Ayuda</label>
+                                        <textarea class="form-control" name="ayuda" rows="3" style="white-space: pre-wrap;">${nota.ayuda || ''}</textarea>
+                                    </div>
+                                    <button type="button" class="btn btn-success" id="guardar-nota-btn">Guardar</button>
+                                    <button type="button" class="btn btn-secondary ms-2" id="cancelar-edicion-btn">Cancelar</button>
+                                </form>
+                            </div>
+                        </div>`;
+                });
             }
 
             // Manejar botón Editar
