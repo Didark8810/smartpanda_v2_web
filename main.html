@@ -164,7 +164,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="src/api.js"></script>
+    <script src="src/updateFiles.js"></script>
     <script>
         // Variables globales para almacenar selecciones
         let idTemaSeleccionado = null;
@@ -341,6 +343,32 @@
             }
 
             const nombreSubtema = subtemaSeleccionado.textContent;
+
+        // Configurar botón Excel
+        document.getElementById('exportar-excel-btn').addEventListener('click', function() {
+            //alert('Funcionalidad de exportar a Excel aún no implementada');
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.xlsx,.xls';
+            fileInput.style.display = 'none';
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    alert(`Procesando archivo: ${file.name}`);
+                    processExcelFile(file)
+                        .then(() => console.log('File processed successfully'))
+                        .catch(err => {
+                            console.error('Error processing file:', err);
+                            alert('Error al procesar el archivo Excel');
+                        });
+                }
+            });
+            
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        });
 
             // Crear modal para nueva nota
             const modalHTML = `
