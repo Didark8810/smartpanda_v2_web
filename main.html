@@ -268,11 +268,41 @@
             document.getElementById('guardar-subtema-btn').addEventListener('click', function () {
                 const nombre = document.getElementById('nombre-subtema').value.trim();
                 if (nombre) {
-                    // Aquí implementar lógica para agregar subtema
-                    alert(`Nuevo subtema "${nombre}" creado`);
-                    modal.hide();
-                    // Eliminar modal del DOM después de cerrar
-                    document.getElementById('nuevoSubtemaModal').remove();
+                    const temaSeleccionado = document.querySelector('#temas-list .list-item.active');
+                    if (!temaSeleccionado) {
+                        alert('No se encontró el tema seleccionado');
+                        return;
+                    }
+                    const idTema = temaSeleccionado.dataset.id;
+
+                    fetch('http://186.64.122.174:8037/api/Subtema/Crear', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            idUsuario: 1,
+                            nombre: nombre,
+                            color: "",
+                            idTema: idTema,
+                            detalle: "",
+                            Token: "",
+                            AppName: "",
+                            AppVersion: "",
+                            AppData: ""
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(`Nuevo subtema "${nombre}" creado`);
+                            modal.hide();
+                            document.getElementById('nuevoSubtemaModal').remove();
+                            cargarSubtemas(idTema); // Refrescar lista de subtemas
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al crear el subtema');
+                        });
                 }
             });
 
