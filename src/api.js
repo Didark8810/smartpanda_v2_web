@@ -181,8 +181,53 @@ async function cargarSubtemas(idTema) {
 
     subtemas.forEach(subtema => {
         const subtemaElement = document.createElement('div');
-        subtemaElement.className = 'list-item';
+        subtemaElement.className = 'list-item d-flex justify-content-between align-items-center';
         subtemaElement.textContent = subtema.nombre;
+
+        // Agregar menú de tres puntos
+        const dropdown = document.createElement('div');
+        dropdown.className = 'dropdown';
+
+        const dropdownButton = document.createElement('button');
+        dropdownButton.className = 'btn btn-sm btn-link text-secondary';
+        dropdownButton.type = 'button';
+        dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+
+        const dotsIcon = document.createElement('i');
+        dotsIcon.className = 'bi bi-three-dots-vertical';
+        dropdownButton.appendChild(dotsIcon);
+
+        const dropdownMenu = document.createElement('ul');
+        dropdownMenu.className = 'dropdown-menu';
+
+        // Opciones del menú
+        const opciones = [
+            { icon: 'bi-pencil', text: 'Editar' },
+            { icon: 'bi-trash', text: 'Eliminar' },
+            { icon: 'bi-share', text: 'Compartir' },
+            { icon: 'bi-arrow-right-circle', text: 'Mover' },
+            { icon: 'bi-files', text: 'Duplicar' }
+        ];
+
+        opciones.forEach(opcion => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.className = 'dropdown-item';
+            a.href = '#';
+
+            const opcionIcon = document.createElement('i');
+            opcionIcon.className = `${opcion.icon} me-2`;
+            a.appendChild(opcionIcon);
+            a.appendChild(document.createTextNode(opcion.text));
+
+            li.appendChild(a);
+            dropdownMenu.appendChild(li);
+        });
+
+        dropdown.appendChild(dropdownButton);
+        dropdown.appendChild(dropdownMenu);
+        subtemaElement.appendChild(dropdown);
+
         subtemaElement.dataset.id = subtema.id;
         subtemasList.appendChild(subtemaElement);
     });
@@ -201,8 +246,53 @@ async function cargarNotas(idSubtema) {
         if (notas && notas.length > 0) {
             notas.forEach(nota => {
                 const notaElement = document.createElement('div');
-                notaElement.className = 'list-item';
+                notaElement.className = 'list-item d-flex justify-content-between align-items-center';
                 notaElement.textContent = nota.titulo;
+
+                // Agregar menú de tres puntos
+                const dropdown = document.createElement('div');
+                dropdown.className = 'dropdown';
+
+                const dropdownButton = document.createElement('button');
+                dropdownButton.className = 'btn btn-sm btn-link text-secondary';
+                dropdownButton.type = 'button';
+                dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+
+                const dotsIcon = document.createElement('i');
+                dotsIcon.className = 'bi bi-three-dots-vertical';
+                dropdownButton.appendChild(dotsIcon);
+
+                const dropdownMenu = document.createElement('ul');
+                dropdownMenu.className = 'dropdown-menu';
+
+                // Opciones del menú
+                const opciones = [
+                    { icon: 'bi-pencil', text: 'Editar' },
+                    { icon: 'bi-trash', text: 'Eliminar' },
+                    { icon: 'bi-share', text: 'Compartir' },
+                    { icon: 'bi-arrow-right-circle', text: 'Mover' },
+                    { icon: 'bi-files', text: 'Duplicar' }
+                ];
+
+                opciones.forEach(opcion => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.className = 'dropdown-item';
+                    a.href = '#';
+
+                    const opcionIcon = document.createElement('i');
+                    opcionIcon.className = `${opcion.icon} me-2`;
+                    a.appendChild(opcionIcon);
+                    a.appendChild(document.createTextNode(opcion.text));
+
+                    li.appendChild(a);
+                    dropdownMenu.appendChild(li);
+                });
+
+                dropdown.appendChild(dropdownButton);
+                dropdown.appendChild(dropdownMenu);
+                notaElement.appendChild(dropdown);
+
                 notaElement.dataset.id = nota.id;
                 notasList.appendChild(notaElement);
             });
