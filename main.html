@@ -187,11 +187,33 @@
             document.getElementById('guardar-tema-btn').addEventListener('click', function () {
                 const nombre = document.getElementById('nombre-tema').value.trim();
                 if (nombre) {
-                    // Aquí implementar lógica para agregar tema
-                    alert(`Nuevo tema "${nombre}" creado`);
-                    modal.hide();
-                    // Eliminar modal del DOM después de cerrar
-                    document.getElementById('nuevoTemaModal').remove();
+                    fetch('http://186.64.122.174:8037/api/Tema/Crear', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nombre: nombre,
+                            color: "",
+                            idUsuario: 1,
+                            detalle: "",
+                            Token: "",
+                            AppName: "",
+                            AppVersion: "",
+                            AppData: ""
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(`Nuevo tema "${nombre}" creado`);
+                            modal.hide();
+                            document.getElementById('nuevoTemaModal').remove();
+                            cargarTemas(); // Refrescar lista de temas
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al crear el tema');
+                        });
                 }
             });
 
