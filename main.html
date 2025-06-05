@@ -149,6 +149,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="src/api.js"></script>
     <script>
+        // Variables globales para almacenar selecciones
+        let idTemaSeleccionado = null;
+        let idSubtemaSeleccionado = null;
+
         // Configurar botones Agregar
         document.getElementById('agregar-tema-btn').addEventListener('click', function () {
             // Crear modal para nuevo tema
@@ -392,9 +396,9 @@
                 document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
                 e.target.classList.add('active');
 
-                // Cargar subtemas del tema seleccionado
-                const idTema = e.target.dataset.id;
-                cargarSubtemas(idTema);
+                // Guardar y cargar subtemas del tema seleccionado
+                idTemaSeleccionado = e.target.dataset.id;
+                cargarSubtemas(idTemaSeleccionado);
 
                 // Limpiar notas y detalle
                 document.getElementById('notas-list').innerHTML = '';
@@ -414,9 +418,9 @@
                 document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
                 e.target.classList.add('active');
 
-                // Cargar notas del subtema seleccionado
-                const idSubtema = e.target.dataset.id;
-                cargarNotas(idSubtema);
+                // Guardar y cargar notas del subtema seleccionado
+                idSubtemaSeleccionado = e.target.dataset.id;
+                cargarNotas(idSubtemaSeleccionado);
 
                 // Limpiar detalle de nota
                 document.getElementById('nota-detalle').innerHTML = `
