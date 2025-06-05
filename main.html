@@ -94,8 +94,8 @@
         <div class="row">
             <!-- Columna 1: Temas -->
             <div class="col-md-3 column">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4>Temas</h4>
+                <div class="mb-4">
+                    <h4 class="mb-2">Temas</h4>
                     <button class="btn btn-sm btn-success" id="agregar-tema-btn">
                         <i class="bi bi-plus"></i> Agregar
                     </button>
@@ -119,8 +119,8 @@
 
             <!-- Columna 2: Subtemas -->
             <div class="col-md-3 column">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4>Subtemas</h4>
+                <div class="mb-4">
+                    <h4 class="mb-2">Subtemas</h4>
                     <button class="btn btn-sm btn-success" id="agregar-subtema-btn">
                         <i class="bi bi-plus"></i> Agregar
                     </button>
@@ -132,11 +132,16 @@
 
             <!-- Columna 3: Notas -->
             <div class="col-md-3 column">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4>Notas</h4>
-                    <button class="btn btn-sm btn-success" id="agregar-nota-btn">
-                        <i class="bi bi-plus"></i> Agregar
-                    </button>
+                <div class="mb-4">
+                    <h4 class="mb-2">Notas</h4>
+                    <div>
+                        <button class="btn btn-sm btn-success me-2" id="agregar-nota-btn" style="font-size: 0.75rem; width: 100px;">
+                            <i class="bi bi-plus"></i> Agregar
+                        </button>
+                        <button class="btn btn-sm btn-primary" id="exportar-excel-btn" style="font-size: 0.75rem; width: 100px;">
+                            <i class="bi bi-file-earmark-excel"></i> Excel
+                        </button>
+                    </div>
                 </div>
                 <div id="notas-list" class="list-group">
                     <!-- Se llenará dinámicamente -->
