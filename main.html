@@ -91,6 +91,19 @@
 
 <body>
     <div class="container-fluid">
+        <!-- Nueva fila para información de usuario -->
+        <div class="row bg-light py-2 border-bottom">
+            <div class="col d-flex justify-content-between align-items-center">
+                <div id="user-info" class="fw-bold">
+                    <i class="bi bi-person-circle me-2"></i>
+                    <span>Usuario: Invitado</span>
+                </div>
+                <button id="logout-btn" class="btn btn-sm btn-danger">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </button>
+            </div>
+        </div>
+        
         <div class="row">
             <!-- Columna 1: Temas -->
             <div class="col-md-3 column">
@@ -168,6 +181,11 @@
     <script src="src/api.js"></script>
     <script src="src/updateFiles.js"></script>
     <script>
+        // Configurar botón de salir
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+        
         // Variables globales para almacenar selecciones
         let idTemaSeleccionado = null;
         let idSubtemaSeleccionado = null;
