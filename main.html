@@ -221,7 +221,7 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            alert(`Nuevo tema "${nombre}" creado`);
+
                             modal.hide();
                             document.getElementById('nuevoTemaModal').remove();
                             cargarTemas(); // Refrescar lista de temas
@@ -310,7 +310,7 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            alert(`Nuevo subtema "${nombre}" creado`);
+
                             modal.hide();
                             document.getElementById('nuevoSubtemaModal').remove();
                             cargarSubtemas(idTema); // Refrescar lista de subtemas
@@ -414,7 +414,7 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            alert(`Nueva nota "${titulo}" creada`);
+
                             modal.hide();
                             document.getElementById('nuevaNotaModal').remove();
                             cargarNotas(idSubtemaSeleccionado); // Refrescar lista de notas
@@ -671,7 +671,7 @@
                         ayuda: form.querySelector('[name="ayuda"]').value
                     };
                     // Aquí implementaremos la lógica para guardar los cambios
-                    alert('Nota actualizada:\n' + JSON.stringify(formData, null, 2));
+
                     toggleEdicion(false);
                 }
             });
