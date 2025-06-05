@@ -119,8 +119,73 @@ async function cargarTemas() {
 
     temas.forEach(tema => {
         const temaElement = document.createElement('div');
-        temaElement.className = 'list-item';
-        temaElement.textContent = tema.nombre;
+        temaElement.className = 'list-item d-flex justify-content-between align-items-center';
+
+        // Crear contenedor para nombre e icono
+        const nombreContainer = document.createElement('div');
+        nombreContainer.className = 'd-flex align-items-center';
+
+        // Agregar icono de edición
+        const icono = document.createElement('i');
+        icono.className = 'bi bi-pencil me-2';
+        nombreContainer.appendChild(icono);
+
+        // Agregar nombre del tema
+        const nombreTema = document.createElement('span');
+        nombreTema.textContent = tema.nombre;
+        nombreContainer.appendChild(nombreTema);
+
+        temaElement.appendChild(nombreContainer);
+
+        // Agregar chevron derecho
+        const chevron = document.createElement('i');
+        chevron.className = 'bi bi-chevron-right me-2';
+        temaElement.appendChild(chevron);
+
+        // Agregar menú de tres puntos
+        const dropdown = document.createElement('div');
+        dropdown.className = 'dropdown';
+
+        const dropdownButton = document.createElement('button');
+        dropdownButton.className = 'btn btn-sm btn-link text-secondary';
+        dropdownButton.type = 'button';
+        dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+
+        const dotsIcon = document.createElement('i');
+        dotsIcon.className = 'bi bi-three-dots-vertical';
+        dropdownButton.appendChild(dotsIcon);
+
+        const dropdownMenu = document.createElement('ul');
+        dropdownMenu.className = 'dropdown-menu';
+
+        // Opciones del menú
+        const opciones = [
+            { icon: 'bi-pencil', text: 'Editar' },
+            { icon: 'bi-trash', text: 'Eliminar' },
+            { icon: 'bi-share', text: 'Compartir' },
+            { icon: 'bi-arrow-right-circle', text: 'Mover' },
+            { icon: 'bi-files', text: 'Duplicar' }
+        ];
+
+        opciones.forEach(opcion => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.className = 'dropdown-item';
+            a.href = '#';
+
+            const opcionIcon = document.createElement('i');
+            opcionIcon.className = `${opcion.icon} me-2`;
+            a.appendChild(opcionIcon);
+            a.appendChild(document.createTextNode(opcion.text));
+
+            li.appendChild(a);
+            dropdownMenu.appendChild(li);
+        });
+
+        dropdown.appendChild(dropdownButton);
+        dropdown.appendChild(dropdownMenu);
+        temaElement.appendChild(dropdown);
+
         temaElement.dataset.id = tema.id;
         temasList.appendChild(temaElement);
     });
