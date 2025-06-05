@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .column {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 15px;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .list-item {
+            cursor: pointer;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .list-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .list-item.active {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        #detail-column {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Columna 1: Temas -->
+            <div class="col-md-3 column">
+                <h4 class="mb-4">Temas</h4>
+                <div id="temas-list" class="list-group">
+                    <div class="list-item">Tema 1</div>
+                    <div class="list-item">Tema 2</div>
+                    <div class="list-item">Tema 3</div>
+                </div>
+            </div>
+
+            <!-- Columna 2: Subtemas -->
+            <div class="col-md-3 column">
+                <h4 class="mb-4">Subtemas</h4>
+                <div id="subtemas-list" class="list-group">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Columna 3: Notas -->
+            <div class="col-md-3 column">
+                <h4 class="mb-4">Notas</h4>
+                <div id="notas-list" class="list-group">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Columna 4: Detalle (doble ancho) -->
+            <div class="col-md-6 column" id="detail-column">
+                <h4 class="mb-4">Detalle de Nota</h4>
+                <div id="nota-detalle">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Seleccione una nota</h5>
+                            <p class="card-text text-muted">El detalle aparecerá aquí</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="src/api.js"></script>
+    <script>
+        // Cargar temas al iniciar
+        document.addEventListener('DOMContentLoaded', cargarTemas);
+
+        // Manejar selección de temas
+        document.getElementById('temas-list').addEventListener('click', function (e) {
+            if (e.target.classList.contains('list-item')) {
+                // Limpiar selecciones anteriores
+                document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Limpiar subtemas y notas
+                document.getElementById('subtemas-list').innerHTML = '';
+                document.getElementById('notas-list').innerHTML = '';
+                document.getElementById('nota-detalle').innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Seleccione un tema</h5>
+                            <p class="card-text text-muted">Los subtemas aparecerán aquí</p>
+                        </div>
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+
+</html>
