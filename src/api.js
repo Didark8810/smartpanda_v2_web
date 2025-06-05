@@ -203,12 +203,6 @@ async function cargarTemas() {
             dropdownMenu.appendChild(li);
         });
 
-        // Manejar evento de eliminación
-        // dropdownMenu.querySelector('.eliminar-tema-btn').addEventListener('click', async (e) => {
-        //     e.preventDefault();
-        //     mostrarModalEliminarTema(tema.id);
-        // });
-
         dropdown.appendChild(dropdownButton);
         dropdown.appendChild(dropdownMenu);
         temaElement.appendChild(dropdown);
@@ -267,8 +261,18 @@ async function cargarSubtemas(idTema) {
             a.appendChild(opcionIcon);
             a.appendChild(document.createTextNode(opcion.text));
 
+            if (opcion.text === 'Eliminar') {
+                a.classList.add('eliminar-subtema-btn');
+            }
+
             li.appendChild(a);
             dropdownMenu.appendChild(li);
+        });
+
+        // Agregar evento de eliminación
+        dropdownMenu.querySelector('.eliminar-subtema-btn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            mostrarModalEliminarSubtema(subtema.id);
         });
 
         dropdown.appendChild(dropdownButton);
@@ -277,6 +281,80 @@ async function cargarSubtemas(idTema) {
 
         subtemaElement.dataset.id = subtema.id;
         subtemasList.appendChild(subtemaElement);
+    });
+}
+
+// Función para mostrar modal de confirmación de eliminación de subtema
+function mostrarModalEliminarSubtema(idSubtema) {
+    const modalHTML = `
+        <div class="modal fade" id="confirmarEliminarSubtemaModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Está seguro que desea eliminar este subtema?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmar-eliminar-subtema-btn">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarSubtemaModal'));
+    modal.show();
+
+    document.getElementById('confirmar-eliminar-subtema-btn').addEventListener('click', function () {
+        fetch('http://186.64.122.174:8037/api/Subtema/Eliminar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: idSubtema,
+                idRemoto: 0,
+                idUsuario: 0,
+                nombre: "",
+                color: "",
+                idTema: 0,
+                detalle: "",
+                Token: "",
+                AppName: "",
+                AppVersion: "",
+                AppData: ""
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                modal.hide();
+                document.getElementById('confirmarEliminarSubtemaModal').remove();
+                // Actualizar lista de subtemas del tema actual
+                const temaSeleccionado = document.querySelector('#temas-list .list-item.active');
+                if (temaSeleccionado) {
+                    cargarSubtemas(temaSeleccionado.dataset.id);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar el subtema');
+            });
+    });
+
+    // Configurar botón Cancelar
+    document.querySelector('#confirmarEliminarSubtemaModal .btn-secondary').addEventListener('click', function () {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarSubtemaModal'));
+        modal.hide();
+        document.getElementById('confirmarEliminarSubtemaModal').remove();
+    });
+
+    // Eliminar modal al cerrar
+    document.getElementById('confirmarEliminarSubtemaModal').addEventListener('hidden.bs.modal', function () {
+        this.remove();
     });
 }
 
