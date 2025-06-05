@@ -181,8 +181,15 @@
     <script src="src/api.js"></script>
     <script src="src/updateFiles.js"></script>
     <script>
-        // Configurar botón de salir
+        // Configurar usuario y botón de salir
+        const userData = JSON.parse(localStorage.getItem('userData')) || {nombre: 'Invitado'};
+        document.getElementById('user-info').innerHTML = `
+            <i class="bi bi-person-circle me-2"></i>
+            <span>Usuario: ${userData.nombre || userData.login || 'Invitado'}</span>
+        `;
+
         document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('userData');
             window.location.href = 'login.html';
         });
         
