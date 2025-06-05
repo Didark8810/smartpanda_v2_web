@@ -151,8 +151,11 @@ async function cargarTemas() {
     const temasList = document.getElementById('temas-list');
     temasList.innerHTML = '<div class="text-center py-3">Cargando temas...</div>';
 
-    const temas = await apiClient.obtenerTemas();
+    let temas = await apiClient.obtenerTemas();
     temasList.innerHTML = '';
+
+    // Ordenar temas alfabéticamente por nombre
+    temas.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     temas.forEach(tema => {
         const temaElement = document.createElement('div');
