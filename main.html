@@ -372,11 +372,45 @@
                     const detalle = document.getElementById('detalle-nota').value;
                     const ayuda = document.getElementById('ayuda-nota').value;
 
-                    // Aquí implementar lógica para agregar nota
-                    alert(`Nueva nota "${titulo}" creada con:\nDetalle: ${detalle}\nAyuda: ${ayuda}`);
-                    modal.hide();
-                    // Eliminar modal del DOM después de cerrar
-                    document.getElementById('nuevaNotaModal').remove();
+                    if (!idTemaSeleccionado || !idSubtemaSeleccionado) {
+                        alert('Por favor seleccione un tema y subtema primero');
+                        return;
+                    }
+
+                    fetch('http://186.64.122.174:8037/api/Nota/Crear', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            titulo: titulo,
+                            detalle: detalle,
+                            ayuda: ayuda,
+                            fecha: "",
+                            libre: 0,
+                            idTema: idTemaSeleccionado,
+                            idSubtema: idSubtemaSeleccionado,
+                            idUsuario: 1,
+                            repaso: 0,
+                            favorito: 0,
+                            importancia: 0,
+                            Token: "",
+                            AppName: "",
+                            AppVersion: "",
+                            AppData: ""
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(`Nueva nota "${titulo}" creada`);
+                            modal.hide();
+                            document.getElementById('nuevaNotaModal').remove();
+                            cargarNotas(idSubtemaSeleccionado); // Refrescar lista de notas
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al crear la nota');
+                        });
                 }
             });
 
