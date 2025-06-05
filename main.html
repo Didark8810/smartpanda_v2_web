@@ -56,7 +56,12 @@
         <div class="row">
             <!-- Columna 1: Temas -->
             <div class="col-md-3 column">
-                <h4 class="mb-4">Temas</h4>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Temas</h4>
+                    <button class="btn btn-sm btn-success" id="agregar-tema-btn">
+                        <i class="bi bi-plus"></i> Agregar
+                    </button>
+                </div>
                 <div id="temas-list" class="list-group">
                     <div class="list-item">Tema 1</div>
                     <div class="list-item">Tema 2</div>
@@ -66,7 +71,12 @@
 
             <!-- Columna 2: Subtemas -->
             <div class="col-md-3 column">
-                <h4 class="mb-4">Subtemas</h4>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Subtemas</h4>
+                    <button class="btn btn-sm btn-success" id="agregar-subtema-btn">
+                        <i class="bi bi-plus"></i> Agregar
+                    </button>
+                </div>
                 <div id="subtemas-list" class="list-group">
                     <!-- Se llenará dinámicamente -->
                 </div>
@@ -74,7 +84,12 @@
 
             <!-- Columna 3: Notas -->
             <div class="col-md-3 column">
-                <h4 class="mb-4">Notas</h4>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Notas</h4>
+                    <button class="btn btn-sm btn-success" id="agregar-nota-btn">
+                        <i class="bi bi-plus"></i> Agregar
+                    </button>
+                </div>
                 <div id="notas-list" class="list-group">
                     <!-- Se llenará dinámicamente -->
                 </div>
@@ -98,6 +113,187 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="src/api.js"></script>
     <script>
+        // Configurar botones Agregar
+        document.getElementById('agregar-tema-btn').addEventListener('click', function () {
+            // Crear modal para nuevo tema
+            const modalHTML = `
+                <div class="modal fade" id="nuevoTemaModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Nuevo Tema</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="nuevo-tema-form">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre del Tema</label>
+                                        <input type="text" class="form-control" id="nombre-tema" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="guardar-tema-btn">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            // Agregar modal al DOM
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('nuevoTemaModal'));
+            modal.show();
+
+            // Configurar evento para guardar
+            document.getElementById('guardar-tema-btn').addEventListener('click', function () {
+                const nombre = document.getElementById('nombre-tema').value.trim();
+                if (nombre) {
+                    // Aquí implementar lógica para agregar tema
+                    alert(`Nuevo tema "${nombre}" creado`);
+                    modal.hide();
+                    // Eliminar modal del DOM después de cerrar
+                    document.getElementById('nuevoTemaModal').remove();
+                }
+            });
+
+            // Eliminar modal al cerrar
+            document.getElementById('nuevoTemaModal').addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+        });
+
+        document.getElementById('agregar-subtema-btn').addEventListener('click', function () {
+            const temaSeleccionado = document.querySelector('#temas-list .list-item.active');
+            if (!temaSeleccionado) {
+                alert('Por favor seleccione un tema primero');
+                return;
+            }
+
+            const nombreTema = temaSeleccionado.textContent;
+
+            // Crear modal para nuevo subtema
+            const modalHTML = `
+                <div class="modal fade" id="nuevoSubtemaModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Subtemas de ${nombreTema}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="nuevo-subtema-form">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nuevo Subtema</label>
+                                        <input type="text" class="form-control" id="nombre-subtema" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="guardar-subtema-btn">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            // Agregar modal al DOM
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('nuevoSubtemaModal'));
+            modal.show();
+
+            // Configurar evento para guardar
+            document.getElementById('guardar-subtema-btn').addEventListener('click', function () {
+                const nombre = document.getElementById('nombre-subtema').value.trim();
+                if (nombre) {
+                    // Aquí implementar lógica para agregar subtema
+                    alert(`Nuevo subtema "${nombre}" creado`);
+                    modal.hide();
+                    // Eliminar modal del DOM después de cerrar
+                    document.getElementById('nuevoSubtemaModal').remove();
+                }
+            });
+
+            // Eliminar modal al cerrar
+            document.getElementById('nuevoSubtemaModal').addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+        });
+
+        document.getElementById('agregar-nota-btn').addEventListener('click', function () {
+            const subtemaSeleccionado = document.querySelector('#subtemas-list .list-item.active');
+            if (!subtemaSeleccionado) {
+                alert('Por favor seleccione un subtema primero');
+                return;
+            }
+
+            const nombreSubtema = subtemaSeleccionado.textContent;
+
+            // Crear modal para nueva nota
+            const modalHTML = `
+                <div class="modal fade" id="nuevaNotaModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Notas de ${nombreSubtema}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="nueva-nota-form">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nueva Nota</label>
+                                        <input type="text" class="form-control" id="titulo-nota" placeholder="Título" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Detalle</label>
+                                        <textarea class="form-control" id="detalle-nota" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Ayuda</label>
+                                        <textarea class="form-control" id="ayuda-nota" rows="2"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="guardar-nota-btn">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            // Agregar modal al DOM
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('nuevaNotaModal'));
+            modal.show();
+
+            // Configurar evento para guardar
+            document.getElementById('guardar-nota-btn').addEventListener('click', function () {
+                const titulo = document.getElementById('titulo-nota').value.trim();
+                if (titulo) {
+                    const detalle = document.getElementById('detalle-nota').value;
+                    const ayuda = document.getElementById('ayuda-nota').value;
+
+                    // Aquí implementar lógica para agregar nota
+                    alert(`Nueva nota "${titulo}" creada con:\nDetalle: ${detalle}\nAyuda: ${ayuda}`);
+                    modal.hide();
+                    // Eliminar modal del DOM después de cerrar
+                    document.getElementById('nuevaNotaModal').remove();
+                }
+            });
+
+            // Eliminar modal al cerrar
+            document.getElementById('nuevaNotaModal').addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+        });
+
         // Cargar temas al iniciar
         document.addEventListener('DOMContentLoaded', cargarTemas);
 
