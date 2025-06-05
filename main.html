@@ -94,17 +94,128 @@
                 document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
                 e.target.classList.add('active');
 
-                // Limpiar subtemas y notas
-                document.getElementById('subtemas-list').innerHTML = '';
+                // Cargar subtemas del tema seleccionado
+                const idTema = e.target.dataset.id;
+                cargarSubtemas(idTema);
+
+                // Limpiar notas y detalle
                 document.getElementById('notas-list').innerHTML = '';
                 document.getElementById('nota-detalle').innerHTML = `
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Seleccione un tema</h5>
-                            <p class="card-text text-muted">Los subtemas aparecerán aquí</p>
+                            <h5 class="card-title">Seleccione un subtema</h5>
+                            <p class="card-text text-muted">Las notas aparecerán aquí</p>
                         </div>
                     </div>`;
             }
+        });
+
+        // Manejar selección de subtemas
+        document.getElementById('subtemas-list').addEventListener('click', function (e) {
+            if (e.target.classList.contains('list-item')) {
+                document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Cargar notas del subtema seleccionado
+                const idSubtema = e.target.dataset.id;
+                cargarNotas(idSubtema);
+
+                // Limpiar detalle de nota
+                document.getElementById('nota-detalle').innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Seleccione una nota</h5>
+                            <p class="card-text text-muted">El detalle aparecerá aquí</p>
+                        </div>
+                    </div>`;
+            }
+        });
+
+        // Función para habilitar/deshabilitar edición
+        function toggleEdicion(enable) {
+            const form = document.getElementById('nota-form');
+            const inputs = form.querySelectorAll('input, textarea');
+            const editBtn = document.getElementById('editar-nota-btn');
+            const cancelBtn = document.getElementById('cancelar-edicion-btn');
+            const saveBtn = document.getElementById('guardar-nota-btn');
+
+            inputs.forEach(input => {
+                input.readOnly = !enable;
+                input.disabled = !enable;
+            });
+
+            editBtn.style.display = enable ? 'none' : 'inline-block';
+            cancelBtn.style.display = enable ? 'inline-block' : 'none';
+            saveBtn.style.display = enable ? 'inline-block' : 'none';
+        }
+
+        // Manejar selección de notas
+        document.getElementById('notas-list').addEventListener('click', function (e) {
+            if (e.target.classList.contains('list-item')) {
+                document.querySelectorAll('.list-item').forEach(i => i.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Mostrar detalle editable de la nota seleccionada
+                const idNota = e.target.dataset.id;
+                const nota = window.notas.find(n => n.id == idNota);
+
+                document.getElementById('nota-detalle').innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="nota-form">
+                                <div class="mb-4">
+                                    <label class="form-label">Título</label>
+                                    <input type="text" class="form-control" name="titulo" value="${nota.titulo}">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Detalle</label>
+                                    <textarea class="form-control" name="detalle" rows="5" style="white-space: pre-wrap;">${nota.detalle}</textarea>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Ayuda</label>
+                                    <textarea class="form-control" name="ayuda" rows="3" style="white-space: pre-wrap;">${nota.ayuda || ''}</textarea>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="editar-nota-btn">Editar</button>
+                                <button type="button" class="btn btn-secondary ms-2" id="cancelar-edicion-btn" style="display:none;">Cancelar</button>
+                                <button type="button" class="btn btn-success ms-2" id="guardar-nota-btn" style="display:none;">Guardar</button>
+                            </form>
+                        </div>
+                    </div>`;
+            }
+
+            // Manejar botón Editar
+            document.addEventListener('click', function (e) {
+                if (e.target.id === 'editar-nota-btn') {
+                    toggleEdicion(true);
+                }
+            });
+
+            // Manejar botón Cancelar
+            document.addEventListener('click', function (e) {
+                if (e.target.id === 'cancelar-edicion-btn') {
+                    toggleEdicion(false);
+                    // Recargar la nota original
+                    const activeNote = document.querySelector('#notas-list .list-item.active');
+                    if (activeNote) {
+                        activeNote.click();
+                    }
+                }
+            });
+
+            // Manejar botón Guardar
+            document.addEventListener('click', function (e) {
+                if (e.target.id === 'guardar-nota-btn') {
+                    const form = document.getElementById('nota-form');
+                    const formData = {
+                        titulo: form.querySelector('[name="titulo"]').value,
+                        detalle: form.querySelector('[name="detalle"]').value,
+                        ayuda: form.querySelector('[name="ayuda"]').value
+                    };
+                    // Aquí implementaremos la lógica para guardar los cambios
+                    alert('Nota actualizada:\n' + JSON.stringify(formData, null, 2));
+                    toggleEdicion(false);
+                }
+            });
         });
     </script>
 </body>
