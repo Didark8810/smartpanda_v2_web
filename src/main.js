@@ -5,9 +5,52 @@ document.getElementById('user-info').innerHTML = `
             <span>Usuario: ${userData.nombre || userData.login || 'Invitado'}</span>
         `;
 
-document.getElementById('logout-btn').addEventListener('click', function () {
-    localStorage.removeItem('userData');
-    window.location.href = 'login.html';
+// Configurar botón de salir con confirmación
+function setupLogoutButton() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (!logoutBtn) return;
+
+    logoutBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // Crear modal de confirmación si no existe
+        if (!document.getElementById('confirmModal')) {
+            const modalHTML = `
+                <div class="modal fade" id="confirmModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmar salida</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Está seguro que desea cerrar sesión?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="confirmModalAccept">Aceptar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Configurar modal
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        document.getElementById('confirmModalAccept').onclick = function () {
+            localStorage.removeItem('userData');
+            window.location.href = 'login.html';
+        };
+
+        confirmModal.show();
+    });
+}
+
+// Configurar al cargar la página
+document.addEventListener('DOMContentLoaded', function () {
+    setupLogoutButton();
+    cargarTemas();
 });
 
 // Variables globales para almacenar selecciones
@@ -60,7 +103,7 @@ document.getElementById('agregar-tema-btn').addEventListener('click', function (
                 body: JSON.stringify({
                     nombre: nombre,
                     color: "",
-                    idUsuario: 1,
+                    idUsuario: JSON.parse(localStorage.getItem('userData'))?.id || 0,
                     detalle: "",
                     Token: "",
                     AppName: "",
@@ -146,7 +189,7 @@ document.getElementById('agregar-subtema-btn').addEventListener('click', functio
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    idUsuario: 1,
+                    idUsuario: JSON.parse(localStorage.getItem('userData'))?.id || 0,
                     nombre: nombre,
                     color: "",
                     idTema: idTema,
@@ -330,7 +373,7 @@ document.getElementById('agregar-nota-btn').addEventListener('click', function (
                     libre: 0,
                     idTema: idTemaSeleccionado,
                     idSubtema: idSubtemaSeleccionado,
-                    idUsuario: 1,
+                    idUsuario: JSON.parse(localStorage.getItem('userData'))?.id || 0,
                     repaso: 0,
                     favorito: 0,
                     importancia: 0,

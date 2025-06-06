@@ -79,9 +79,9 @@
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        document.getElementById('login-form').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('login-error');
@@ -100,36 +100,35 @@
                     login: username,
                     pass: password,
                     Token: "string",
-                    AppName: "string", 
+                    AppName: "string",
                     AppVersion: "string",
                     AppData: "string"
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if(data.respuesta === 1 && data.Data?.id !== 0) {
-                    // Guardar datos de usuario en localStorage
-                    localStorage.setItem('userData', JSON.stringify(data.Data));
-                    window.location.href = 'main.html';
-                } else {
-                    errorDiv.textContent = data.Mensaje || 'Error en las credenciales';
+                .then(response => response.json())
+                .then(data => {
+                    if (data.respuesta === 1 && data.Data?.id !== 0) {
+                        // Guardar datos de usuario en localStorage
+                        localStorage.setItem('userData', JSON.stringify(data.Data));
+                        window.location.href = 'main.html';
+                    } else {
+                        errorDiv.textContent = data.Mensaje || 'Error en las credenciales';
+                        errorDiv.classList.remove('d-none');
+                    }
+                })
+                .catch(error => {
+                    errorDiv.textContent = 'Error de conexión';
                     errorDiv.classList.remove('d-none');
-                }
-            })
-            .catch(error => {
-                errorDiv.textContent = 'Error de conexión';
-                errorDiv.classList.remove('d-none');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Ingresar';
-            });
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Ingresar';
+                });
         });
     </script>
     <script>
-        document.getElementById('nuevo-usuario-btn').addEventListener('click', function() {
-            // Aquí puedes implementar la lógica para crear nuevo usuario
-            alert('Funcionalidad de nuevo usuario será implementada próximamente');
+        document.getElementById('nuevo-usuario-btn').addEventListener('click', function () {
+            window.location.href = 'user.html';
         });
     </script>
 </body>

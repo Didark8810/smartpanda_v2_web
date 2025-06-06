@@ -11,7 +11,7 @@ class ApiClient {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    Valor: 1,
+                    Valor: JSON.parse(localStorage.getItem('userData'))?.id || 0,
                     Parametro: "string",
                     token1: "string",
                     Token: "string",

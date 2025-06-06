@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Notas App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+
+        .register-card {
+            max-width: 450px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+        }
+    </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center vh-100">
+    <div class="card register-card p-4">
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus text-primary" style="font-size: 2.5rem;"></i>
+                <h2 class="card-title mt-3">Registro de Usuario</h2>
+                <p class="text-muted">Complete los datos para registrarse</p>
+            </div>
+
+            <form id="register-form">
+                <div id="register-error" class="alert alert-danger d-none mb-3"></div>
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nombre completo</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                        <input type="text" class="form-control" id="name" required placeholder="Ingrese su nombre">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email (opcional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" placeholder="ejemplo@mail.com">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nombre de usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="username" required placeholder="Cree un nombre de usuario">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" required placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirm-password" class="form-label">Confirmar contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" class="form-control" id="confirm-password" required placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>Registrarse
+                    </button>
+                    <a href="login.html" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorDiv = document.getElementById('register-error');
+
+            // Validar contraseñas coincidan
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Las contraseñas no coinciden';
+                errorDiv.classList.remove('d-none');
+                return;
+            }
+
+            // Mostrar loading
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrando...';
+
+            // Aquí iría la llamada a la API para registrar el usuario
+            fetch('http://186.64.122.174:8037/api/Usuario/Crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nombre: name,
+                    email: email || "", // Asegurar que sea string vacío si no hay email
+                    login: username,
+                    pass: password,
+                    alias: "string",
+                    Token: "string",
+                    AppName: "string",
+                    AppVersion: "string",
+                    AppData: "string"
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.respuesta === 1) {
+                        // Guardar datos del nuevo usuario en localStorage
+                        localStorage.setItem('userData', JSON.stringify({
+                            id: data.Data,
+                            nombre: name,
+                            login: username
+                        }));
+                        window.location.href = 'main.html';
+                    } else {
+                        errorDiv.textContent = data.Mensaje || 'Error al registrar usuario';
+                        errorDiv.classList.remove('d-none');
+                    }
+                })
+                .catch(error => {
+                    errorDiv.textContent = 'Error de conexión';
+                    errorDiv.classList.remove('d-none');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-person-plus me-2"></i>Registrarse';
+                });
+        });
+    </script>
+</body>
+
+</html>

@@ -20,10 +20,10 @@ function processExcelFile(source) {
         // Process data from either URL or File
         const processData = (data) => {
             try {
-                const workbook = XLSX.read(new Uint8Array(data), {type: 'array'});
+                const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: ['titulo', 'detalle', 'ayuda']});
-                
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: ['titulo', 'detalle', 'ayuda'] });
+
                 // Prepare notes data
                 const notesToCreate = jsonData
                     .filter(row => row.titulo && row.detalle)
@@ -35,7 +35,7 @@ function processExcelFile(source) {
                         libre: 0,
                         idTema: idTemaSeleccionado || 0,
                         idSubtema: idSubtemaSeleccionado || 0,
-                        idUsuario: 1,
+                        idUsuario: JSON.parse(localStorage.getItem('userData'))?.id || 0,
                         repaso: 0,
                         favorito: 0,
                         importancia: 0,
@@ -48,7 +48,7 @@ function processExcelFile(source) {
                 // Process records sequentially with progress updates
                 const processRecords = async () => {
                     updateProgress(0, notesToCreate.length);
-                    
+
                     for (let i = 0; i < notesToCreate.length; i++) {
                         await fetch('http://186.64.122.174:8037/api/Nota/Crear', {
                             method: 'POST',
@@ -76,10 +76,10 @@ function processExcelFile(source) {
 
         // Read local file
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             processData(e.target.result);
         };
-        reader.onerror = function(error) {
+        reader.onerror = function (error) {
             console.error('Error leyendo archivo:', error);
             reject(error);
         };
