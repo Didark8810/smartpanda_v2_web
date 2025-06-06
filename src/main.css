@@ -1,0 +1,78 @@
+.column {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 15px;
+            border-right: 1px solid #dee2e6;
+        }
+
+        /* Columnas más estrechas para temas, subtemas y notas */
+        .col-md-3.column {
+            width: 20%;
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+
+        /* Columna más ancha para el detalle */
+        .col-md-6.column {
+            width: 40%;
+            flex: 0 0 40%;
+            max-width: 40%;
+        }
+
+        .list-item {
+            cursor: pointer;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .list-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .list-item.active {
+            background-color: #abebc6;
+            font-weight: bold;
+        }
+
+        /* Estilos para el menú de tres puntos */
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .dropdown-menu {
+            font-size: 0.875rem;
+            min-width: 8rem;
+        }
+
+        .dropdown-item {
+            padding: 0.25rem 1rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .btn-link.text-secondary {
+            color: #6c757d !important;
+            padding: 0.25rem;
+            font-size: 1.2rem;
+            margin-left: 0.5rem;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-link.text-secondary:hover {
+            color: #495057 !important;
+        }
+
+        .list-item {
+            padding-right: 0 !important;
+        }
+
+        #detail-column {
+            background-color: #f8f9fa;
+        }
