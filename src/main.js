@@ -536,19 +536,26 @@ document.getElementById('subtemas-list').addEventListener('click', function (e) 
 // Función para habilitar/deshabilitar edición
 function toggleEdicion(enable) {
     const form = document.getElementById('nota-form');
+    if (!form) return; // Si no existe el formulario, salir
+
     const inputs = form.querySelectorAll('input, textarea');
     const editBtn = document.getElementById('editar-nota-btn');
     const cancelBtn = document.getElementById('cancelar-edicion-btn');
     const saveBtn = document.getElementById('guardar-nota-btn');
 
-    inputs.forEach(input => {
-        input.readOnly = !enable;
-        input.disabled = !enable;
-    });
+    // Verificar que existen los elementos antes de manipularlos
+    if (inputs) {
+        inputs.forEach(input => {
+            if (input) {
+                input.readOnly = !enable;
+                input.disabled = !enable;
+            }
+        });
+    }
 
-    editBtn.style.display = enable ? 'none' : 'inline-block';
-    cancelBtn.style.display = enable ? 'inline-block' : 'none';
-    saveBtn.style.display = enable ? 'inline-block' : 'none';
+    if (editBtn) editBtn.style.display = enable ? 'none' : 'inline-block';
+    if (cancelBtn) cancelBtn.style.display = enable ? 'inline-block' : 'none';
+    if (saveBtn) saveBtn.style.display = enable ? 'inline-block' : 'none';
 }
 
 // Manejar selección de notas
@@ -644,9 +651,65 @@ document.getElementById('notas-list').addEventListener('click', function (e) {
                 detalle: form.querySelector('[name="detalle"]').value,
                 ayuda: form.querySelector('[name="ayuda"]').value
             };
-            // Aquí implementaremos la lógica para guardar los cambios
+            const activeNote = document.querySelector('#notas-list .list-item.active');
+            if (!activeNote) return;
 
-            toggleEdicion(false);
+            const idNota = activeNote.dataset.id;
+            const nota = window.notas.find(n => n.id == idNota);
+
+            console.log('Guardando cambios para la nota:', idNota, formData);
+            console.log('Nota original:', nota);
+
+            const requestData = {
+                id: parseInt(idNota),
+                titulo: formData.titulo,
+                detalle: formData.detalle,
+                ayuda: formData.ayuda,
+                fecha: nota.fecha,
+                libre: nota.libre,
+                idTema: nota.idTema,
+                idSubtema: nota.idSubtema,
+                idUsuario: JSON.parse(localStorage.getItem('userData'))?.id || 0,
+                repaso: nota.repaso,
+                favorito: nota.favorito,
+                importancia: nota.importancia,
+                Token: "",
+                AppName: "",
+                AppVersion: "",
+                AppData: ""
+            };
+
+            console.log("Datos enviados al API:", requestData);
+
+            fetch('http://186.64.122.174:8037/api/Nota/Editar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Respuesta completa del servidor:', data);
+                    if (data.Data == 1) {
+                        toggleEdicion(false);
+                        // Recargar la nota editada
+                        activeNote.click();
+                        cargarNotas(idSubtemaSeleccionado);
+
+                    } else {
+                        alert(`Error del servidor: ${data.Mensaje || 'Error desconocido'}`);
+                    }
+                })
+                .catch(error => {
+
+                    alert(`Error al guardar los cambios: ${error.message}`);
+                });
         }
     });
 });
